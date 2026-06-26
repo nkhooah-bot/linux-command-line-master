@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lecture 4 – The Linux Command Line</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Code+Pro:wght@400;600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #1a6b72;
+    --teal-dark: #124f54;
+    --teal-light: #e8f4f5;
+    --gold: #c8a84b;
+    --cream: #fdf6ec;
+    --paper: #fffdf9;
+    --ink: #1e1e1e;
+    --muted: #6b6b6b;
+    --border: #d4c9b0;
+    --code-bg: #f5f2ec;
+    --accent: #e85d2a;
+    --green: #3d9970;
+    --red: #e85d2a;
+    --page-width: 820px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #c8bfaf;
+    background-image: repeating-linear-gradient(45deg, #c4baa9 0px, #c4baa9 2px, transparent 2px, transparent 10px);
+    font-family: 'Lato', sans-serif;
+    color: var(--ink);
+    line-height: 1.6;
+    padding: 40px 20px;
+  }
+  #page-container {
+    max-width: var(--page-width);
+    margin: 0 auto;
+    background: var(--paper);
+    padding: 50px 60px;
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    position: relative;
+  }
+  header {
+    border-bottom: 2px solid var(--gold);
+    padding-bottom: 20px;
+    margin-bottom: 40px;
+  }
+  .meta-header {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 13px;
+    color: var(--teal);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 38px;
+    color: var(--teal-dark);
+    line-height: 1.2;
+    font-weight: 700;
+  }
+  .intro-text {
+    font-size: 17px;
+    color: var(--muted);
+    margin-top: 15px;
+    font-style: italic;
+  }
+  #toc {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    padding: 25px;
+    margin-bottom: 40px;
+  }
+  #toc h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    color: var(--teal-dark);
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 5px;
+  }
+  #toc ul {
+    list-style: none;
+  }
+  #toc li {
+    margin-bottom: 10px;
+    font-size: 15px;
+  }
+  #toc a {
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--gold);
+    transition: color 0.2s;
+  }
+  #toc a:hover {
+    color: var(--teal);
+    border-bottom-style: solid;
+  }
+  .section-block {
+    margin-bottom: 45px;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    color: var(--teal-dark);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+  }
+  .sec-num {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 14px;
+    background: var(--teal);
+    color: white;
+    padding: 3px 8px;
+    margin-right: 12px;
+    border-radius: 3px;
+    font-weight: 400;
+  }
+  p {
+    margin-bottom: 18px;
+    font-size: 16px;
+    color: #2c2c2c;
+    text-align: justify;
+  }
+  ul, ol {
+    margin-left: 25px;
+    margin-bottom: 18px;
+  }
+  li {
+    margin-bottom: 6px;
+    font-size: 16px;
+  }
+  .highlight-box {
+    background: var(--teal-light);
+    border-left: 4px solid var(--teal);
+    padding: 20px;
+    margin: 25px 0;
+    border-radius: 0 4px 4px 0;
+  }
+  .highlight-box h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: var(--teal-dark);
+    margin-bottom: 8px;
+  }
+  .chip {
+    font-family: 'Source Code Pro', monospace;
+    background: var(--code-bg);
+    padding: 2px 6px;
+    font-size: 13.5px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--teal-dark);
+  }
+
+  .code-container {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    padding: 20px;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 25px 0;
+    overflow-x: auto;
+    border-radius: 4px;
+    color: #24292e;
+  }
+
+  .types-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 25px;
+    margin: 30px 0;
+  }
+  @media (min-width: 650px) {
+    .types-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .type-card {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-top: 4px solid var(--teal);
+    padding: 25px;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+  }
+  .type-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 19px;
+    color: var(--teal-dark);
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .type-meta {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-weight: 400;
+  }
+  
+  #footer {
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+    margin-top: 50px;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<div id="page-container">
+
+  <header>
+    <div class="meta-header">Linux Command Line Master Series</div>
+    <h1>Chapter 4 – The Linux Command Line</h1>
+    <div class="intro-text">
+      An exploration of interactive shell environments, analyzing terminal welcome sequences, anatomizing the prompt string syntax, and mastering real-time network troubleshooting utilities.
+    </div>
+  </header>
+
+  <nav id="toc">
+    <h2>Table of Contents</h2>
+    <ul>
+      <li><a href="#welcome-message">1. Demystifying the Terminal Welcome Message (MOTD)</a></li>
+      <li><a href="#prompt-anatomy">2. Anatomy of the Command Prompt Structure</a></li>
+      <li><a href="#what-is-command">3. Functional Definition of Terminal Commands</a></li>
+      <li><a href="#ping-utility">4. Practical Application: Network Diagnostics with Ping</a></li>
+      <li><a href="#case-sensitivity">5. Strict Syntax Constraints &amp; Case Sensitivity Rules</a></li>
+      <li><a href="#lab-exercise">6. Hands-on Laboratory Challenge Worksheets</a></li>
+    </ul>
+  </nav>
+
+  <div id="content-wrapper">
+
+    <section class="section-block" id="welcome-message">
+      <h2 class="section-title"><span class="sec-num">Section 1</span>Demystifying the Terminal Welcome Message (MOTD)</h2>
+      <p>
+        Upon authenticating and opening a Linux shell connection, the system greeting interfaces display an automated message sequence. This sequence is technically known within UNIX administration frameworks as the <strong>Message of the Day (MOTD)</strong>.
+      </p>
+      <p>
+        This primary interface serves to warmly greet developers while immediately displaying key infrastructure profiles, containing the following details:
+      </p>
+      <ul>
+        <li><strong>Distribution Version Details:</strong> The opening statements present explicit operating system versions, build histories, and kernel architectures.</li>
+        <li><strong>Documentation Portal Indexes:</strong> Helpful web link indexes redirect users out to online manual references and community code boards.</li>
+        <li><strong>Service Provision Updates:</strong> Highlight indicators feature specialized software packages, pending patch arrays, or active network daemons running across the instance.</li>
+      </ul>
+      <p>
+        The footer layout of this system banner includes instructions specifying how to cleanly hide or permanently disable the greeting message. While these layout definitions may seem slightly cryptic to beginners, their configuration syntax patterns will become completely clear in future chapters.
+      </p>
+    </section>
+
+    <section class="section-block" id="prompt-anatomy">
+      <h2 class="section-title"><span class="sec-num">Section 2</span>Anatomy of the Command Prompt Structure</h2>
+      <p>
+        Directly beneath the system text printouts sits the interactive operational line known as the <strong>Command Prompt</strong>. This text string provides context regarding your administrative privileges and current system tracking status before accepting instructions.
+      </p>
+
+      
+
+      <p>
+        Breaking down the prompt sequence from left to right reveals a strict arrangement of metadata blocks:
+      </p>
+      <ol>
+        <li><strong>Account Username:</strong> The initial text string states the precise user account profile currently authenticated into the terminal session.</li>
+        <li><strong>The Separator (<span class="chip">@</span>):</strong> The at symbol binds the active session user profile directly to its corresponding network host container.</li>
+        <li><strong>Workstation Hostname:</strong> This entry is the unique network identifier of your system, which isolates the machine from other computers across an enterprise network.</li>
+        <li><strong>Directory Block Separator (<span class="chip">:</span>):</strong> A colon divider isolates the system location tracking string from the host metadata parameters.</li>
+        <li><strong>The Tilde Character (<span class="chip">~</span>):</strong> This squiggly punctuation marker acts as a variable shortcut pointing to the active user's dedicated home directory path.</li>
+        <li><strong>The Prompt Status Tool (<span class="chip">$</span>):</strong> The final dollar sign character formally indicates that the shell environment has successfully completed its initialization routines and is completely ready to accept input commands.</li>
+      </ol>
+    </section>
+
+    <section class="section-block" id="what-is-command">
+      <h2 class="section-title"><span class="sec-num">Section 3</span>Functional Definition of Terminal Commands</h2>
+      <p>
+        Simply put, <strong>commands</strong> are explicit, case-sensitive text keywords that you type into the terminal interface to tell the shell interpreter to carry out precise computing operations.
+      </p>
+      <p>
+        Rather than thinking of these commands as mere text phrases, they should be conceptualized as <strong>miniature software applications</strong> built into your system distribution. When you enter a command keyword and press your return key, you are directly executing a compiled utility designed to handle a targeted system job.
+      </p>
+    </section>
+
+    <section class="section-block" id="ping-utility">
+      <h2 class="section-title"><span class="sec-num">Section 4</span>Practical Application: Network Diagnostics with Ping</h2>
+      <p>
+        To examine how commands execute, we can use an important network utility tool called <strong>ping</strong>. This application is used to diagnose and troubleshoot internet connectivity parameters and verify remote server availability.
+      </p>
+      <p>
+        To put this utility to work, input the lowercase word <span class="chip">ping</span>, add a blank space, and append a target web address, such as <span class="chip">google.com</span>. Pressing the enter key sends the command instruction into immediate motion:
+      </p>
+
+      <div class="code-container">
+        user@ubuntu-server:~$ ping google.com
+        64 bytes from 142.250.190.46: icmp_seq=1 ttl=116 time=14.2 ms
+        64 bytes from 142.250.190.46: icmp_seq=2 ttl=116 time=15.1 ms
+        64 bytes from 142.250.190.46: icmp_seq=3 ttl=116 time=13.8 ms
+      </div>
+
+      <p>
+        The terminal will continuously transmit small echo request packets to the destination address to check if it is reachable over the network. Receiving steady echo replies confirms that your internet connection is active and working properly. The terminal output also reveals live statistics, such as the exact millisecond duration of each connection trip.
+      </p>
+      <p>
+        Because the tool will continue running indefinitely, you must manually tell the terminal to stop sending requests. To abort the active command loop and return to the main prompt, press the <strong><span class="chip">Ctrl</span> + <span class="chip">C</span></strong> keyboard combination. The <span class="chip">C</span> character stands for <em>Cancel</em> and signals the shell environment to immediately stop the current background process.
+      </p>
+
+      <div class="code-container">
+        ^C
+        --- google.com ping statistics ---
+        3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+        rtt min/avg/max/mdev = 13.821/14.372/15.114/0.548 ms
+        user@ubuntu-server:~$ 
+      </div>
+    </section>
+
+    <section class="section-block" id="case-sensitivity">
+      <h2 class="section-title"><span class="sec-num">Section 5</span>Strict Syntax Constraints &amp; Case Sensitivity Rules</h2>
+      <p>
+        An essential rule to remember is that commands inside UNIX and Linux shell interfaces are strictly <strong>case-sensitive</strong>. The interpreter parses uppercase and lowercase character sets completely differently.
+      </p>
+      <p>
+        For instance, entering the keyword using a capital letter (<span class="chip">Ping</span>) will fail because the shell does not recognize it as a valid built-in program:
+      </p>
+
+      <div class="code-container">
+        user@ubuntu-server:~$ Ping google.com
+        Command 'Ping' not found, did you mean:
+          command 'ping' from deb iputils-ping
+          command 'pain' from deb pain
+        Ping: command not found
+      </div>
+
+      <p>
+        When a command mismatch happens, the smart terminal interface will look through its application records and display a list of valid, closely related keywords—including the correct lowercase <span class="chip">ping</span> utility.
+      </p>
+    </section>
+
+    <section class="section-block" id="lab-exercise">
+      <h2 class="section-title"><span class="sec-num">Section 6</span>Hands-on Laboratory Challenge Worksheets</h2>
+      <p>
+        Now that you understand how commands run inside the shell, test your terminal skills by completing these hands-on system exploration challenges:
+      </p>
+
+      <div class="types-grid">
+        <div class="type-card" style="border-top-color: var(--teal);">
+          <h3>Exercise 1: Target Variation Routing</h3>
+          <p>Run the diagnostic tool against three completely distinct global websites (e.g., <span class="chip">wikipedia.org</span>, <span class="chip">github.com</span>). Carefully observe how connection speeds change depending on the destination server.</p>
+        </div>
+
+        <div class="type-card" style="border-top-color: var(--accent);">
+          <h3>Exercise 2: Non-Existent Address Resolution</h3>
+          <p>Attempt to execute the tool against an intentional, non-existent web address profile (e.g., <span class="chip">thisdomainisafakeunrealaddress.com</span>). Analyze the error code returned when the system cannot resolve the address name.</p>
+        </div>
+      </div>
+
+      <div class="highlight-box">
+        <h3>Historical Milestone Fact</h3>
+        <p>
+          Did you know that the original UNIX development tree—the architectural ancestor of modern Linux—was designed all the way back in the late 1960s? It is incredible to realize that the command-line patterns we type out today have evolved directly from robust computing frameworks established over half a century ago.
+        </p>
+      </div>
+      
+      <p>
+        Complete your network connection tests, and then move forward to our next module, where we will learn how to pass arguments and specialized modification options into terminal software applications. See you there!
+      </p>
+    </section>
+
+  </div>
+
+  <div id="footer">
+    <span>Linux Masterclass &amp; Systems Architecture</span>
+    <span>Section 1 · Lecture Notes 4</span>
+  </div>
+
+</div>
+
+</body>
+</html>
