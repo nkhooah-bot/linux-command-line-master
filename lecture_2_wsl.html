@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WSL Linux Installation</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Code+Pro:wght@400;600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal: #1a6b72;
+    --teal-dark: #124f54;
+    --teal-light: #e8f4f5;
+    --gold: #c8a84b;
+    --cream: #fdf6ec;
+    --paper: #fffdf9;
+    --ink: #1e1e1e;
+    --muted: #6b6b6b;
+    --border: #d4c9b0;
+    --code-bg: #f5f2ec;
+    --accent: #e85d2a;
+    --green: #3d9970;
+    --red: #e85d2a;
+    --page-width: 820px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #c8bfaf;
+    background-image: repeating-linear-gradient(45deg, #c4baa9 0px, #c4baa9 2px, transparent 2px, transparent 10px);
+    font-family: 'Lato', sans-serif;
+    color: var(--ink);
+    line-height: 1.6;
+    padding: 40px 20px;
+  }
+  #page-container {
+    max-width: var(--page-width);
+    margin: 0 auto;
+    background: var(--paper);
+    padding: 50px 60px;
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    position: relative;
+  }
+  header {
+    border-bottom: 2px solid var(--gold);
+    padding-bottom: 20px;
+    margin-bottom: 40px;
+  }
+  .meta-header {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 13px;
+    color: var(--teal);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 38px;
+    color: var(--teal-dark);
+    line-height: 1.2;
+    font-weight: 700;
+  }
+  .intro-text {
+    font-size: 17px;
+    color: var(--muted);
+    margin-top: 15px;
+    font-style: italic;
+  }
+  #toc {
+    background: var(--cream);
+    border: 1px solid var(--border);
+    padding: 25px;
+    margin-bottom: 40px;
+  }
+  #toc h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    color: var(--teal-dark);
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 5px;
+  }
+  #toc ul {
+    list-style: none;
+  }
+  #toc li {
+    margin-bottom: 10px;
+    font-size: 15px;
+  }
+  #toc a {
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--gold);
+    transition: color 0.2s;
+  }
+  #toc a:hover {
+    color: var(--teal);
+    border-bottom-style: solid;
+  }
+  .section-block {
+    margin-bottom: 45px;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    color: var(--teal-dark);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+  }
+  .sec-num {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 14px;
+    background: var(--teal);
+    color: white;
+    padding: 3px 8px;
+    margin-right: 12px;
+    border-radius: 3px;
+    font-weight: 400;
+  }
+  p {
+    margin-bottom: 18px;
+    font-size: 16px;
+    color: #2c2c2c;
+    text-align: justify;
+  }
+  ul {
+    margin-left: 25px;
+    margin-bottom: 18px;
+  }
+  li {
+    margin-bottom: 6px;
+    font-size: 16px;
+  }
+  .highlight-box {
+    background: var(--teal-light);
+    border-left: 4px solid var(--teal);
+    padding: 20px;
+    margin: 25px 0;
+    border-radius: 0 4px 4px 0;
+  }
+  .highlight-box h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: var(--teal-dark);
+    margin-bottom: 8px;
+  }
+  .chip {
+    font-family: 'Source Code Pro', monospace;
+    background: var(--code-bg);
+    padding: 2px 6px;
+    font-size: 13.5px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--teal-dark);
+  }
+  
+  /* Layout Grid Cards */
+  .types-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 25px;
+    margin: 30px 0;
+  }
+  @media (min-width: 650px) {
+    .types-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .type-card {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-top: 4px solid var(--teal);
+    padding: 25px;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+  }
+  .type-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 19px;
+    color: var(--teal-dark);
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .type-meta {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-weight: 400;
+  }
+
+  .code-container {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    padding: 20px;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 25px 0;
+    overflow-x: auto;
+    border-radius: 4px;
+    color: #24292e;
+  }
+  
+  #footer {
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+    margin-top: 50px;
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<div id="page-container">
+
+  <header>
+    <div class="meta-header">Linux Command Line Master Series</div>
+    <h1>WSL Linux Installation</h1>
+    <div class="intro-text">
+      A comprehensive guide to deploying the Windows Subsystem for Linux (WSL) to provision a native Ubuntu shell environment directly inside the Windows host subsystem.
+    </div>
+  </header>
+
+  <nav id="toc">
+    <h2>Table of Contents</h2>
+    <ul>
+      <li><a href="#system-compatibility">1. System Compatibility Requirements Matrix</a></li>
+      <li><a href="#wsl-concept">2. Understanding the Windows Subsystem for Linux (WSL)</a></li>
+      <li><a href="#powershell-deployment">3. Administrative Shell Ingestion and Command Execution</a></li>
+      <li><a href="#provisioning-ubuntu">4. Initialization and User Credential Security Provisioning</a></li>
+    </ul>
+  </nav>
+
+  <div id="content-wrapper">
+
+    <section class="section-block" id="system-compatibility">
+      <h2 class="section-title"><span class="sec-num">Section 1</span>System Compatibility Requirements Matrix</h2>
+      <p>
+        Before initializing the installation routine, verifying host infrastructure layout baselines is necessary. This automation installation blueprint is engineered specifically for systems running <strong>Windows 10 (Version 2004 and higher) or Windows 11</strong>. 
+      </p>
+      <p>
+        If your workstation relies on an alternate environment, consider the following layout paths:
+      </p>
+      <ul>
+        <li><strong>macOS Architectures:</strong> The UNIX-based foundation of macOS handles core commands natively. Proceed directly to the alternative guide resources.</li>
+        <li><strong>Legacy Windows Environments:</strong> Legacy desktop revisions (Windows 7 or 8) cannot process the modern hypervisor controls needed for WSL. Move to the next module for explicit Virtual Machine (VM) provisioning frameworks.</li>
+      </ul>
+    </section>
+
+    <section class="section-block" id="wsl-concept">
+      <h2 class="section-title"><span class="sec-num">Section 2</span>Understanding the Windows Subsystem for Linux (WSL)</h2>
+      <p>
+        Provisioning a Linux CLI inside a Windows ecosystem is simple thanks to a technology layer called the <strong>Windows Subsystem for Linux (WSL)</strong>. Rather than forcing heavy dual-boot disk operations or bulky traditional hypervisors, WSL enables a native Linux kernel runtime to interface directly with Windows resources.
+      </p>
+      
+      
+
+      <p>
+        This layered model can be conceptualized as an integrated software sandwich: your foundational Windows system handles core hardware operations, while a fully capable Linux user space runs smoothly alongside standard windows applications without heavy overhead.
+      </p>
+    </section>
+
+    <section class="section-block" id="powershell-deployment">
+      <h2 class="section-title"><span class="sec-num">Section 3</span>Administrative Shell Ingestion and Command Execution</h2>
+      <p>
+        To inject the platform hypervisor and default distribution profiles, execute the official terminal installation routine within an administrative console context. Follow these precise operational steps:
+      </p>
+      <ol>
+        <li>Open your system <strong>Start Menu</strong> and execute a search query for <span class="chip">PowerShell</span>.</li>
+        <li>Do not click the item directly. Instead, right-click the target icon and explicitly select <strong>Run as Administrator</strong> to grant elevated runtime permissions to the command context.</li>
+        <li>Inside the administrative prompt window, input the following script instruction:</li>
+      </ol>
+
+      <div class="code-container">
+        PS C:\Windows\system32&gt; wsl --install
+      </div>
+
+      <p>
+        Press the <span class="chip">Enter</span> key to run the instruction. The operating system will trigger background package downloads and activate necessary virtual machine platform features. Once completed, exit the active PowerShell terminal layout and <strong>reboot your computer</strong> to finalize system adjustments.
+      </p>
+      
+      <div class="highlight-box">
+        <h3>Encountered an installation error?</h3>
+        <p>
+          If a specialized error code or hardware virtualization blocker disrupts your installation sequence, do not panic. Simply bypass this approach and move directly to the next lesson, where we explore robust fallback installation alternatives using independent Virtual Machine configurations.
+        </p>
+      </div>
+    </section>
+
+    <section class="section-block" id="provisioning-ubuntu">
+      <h2 class="section-title"><span class="sec-num">Section 4</span>Initialization and User Credential Security Provisioning</h2>
+      <p>
+        Once the host system has completed its reboot sequence, you can activate your newly installed Linux environment. Open your system <strong>Start Menu</strong>, search for <span class="chip">Ubuntu</span>, and launch the newly registered application framework.
+      </p>
+      <p>
+        During the initial startup phase, the console will complete a brief unpacking routine before prompting you to declare structural security parameters:
+      </p>
+      
+      <ul>
+        <li><strong>Username Registration:</strong> Input a new, lowercase identifier to act as your primary administrator credential profile inside the Linux subsystem environment.</li>
+        <li><strong>Password Assignment:</strong> Input a strong terminal security access password. Note that as you type the letters, <strong>no characters or masking placeholders will appear on screen</strong>. This is a deliberate, native UNIX security protocol designed to block nearby prying eyes from tracking credential lengths. Enter the password a second time when prompted to confirm it.</li>
+      </ul>
+
+      <p>
+        When the security handshake processes successfully, the terminal prompt will unlock, placing a native, fully operational Ubuntu terminal at your fingertips. Now that our sandbox environment is configured, we can move forward to explore interactive command structures and navigation syntax. See you in the next lesson!
+      </p>
+    </section>
+
+  </div>
+
+  <div id="footer">
+    <span>Linux Masterclass &amp; Systems Architecture</span>
+  </div>
+
+</div>
+
+</body>
+</html>
